@@ -1,0 +1,67 @@
+\documentclass[@@FONTPT@@pt,@@PAPER@@,twoside,openright]{book}
+\usepackage{textbook}
+\booktitle{@@TITLE@@}
+\bookauthor{@@AUTHOR@@}
+\hypersetup{pdftitle={@@PDFTITLE@@},
+            pdfauthor={@@AUTHOR@@},pdfsubject={},pdfkeywords={}}
+\begin{document}
+\frontmatter
+
+% ---- half title -------------------------------------------------------------
+\thispagestyle{empty}
+\begin{center}
+\vspace*{0.30\textheight}
+{\sffamily\fontsize{24}{29}\selectfont\bfseries\color{accent}@@TITLE_LINES@@\par}
+\end{center}
+\cleardoublepage
+
+% ---- title page (no titlepage environment: it would reset the page counter) ---------
+\begingroup
+\thispagestyle{empty}
+\centering
+\vspace*{2.6cm}
+{\color{accent}\rule{0.32\linewidth}{1.4pt}}\par
+\vspace{1.3cm}
+{\sffamily\fontsize{@@TITLE_PT@@}{@@TITLE_LEAD@@}\selectfont\bfseries @@TITLE_LINES@@\par}
+@@SUBTITLE_BLOCK@@
+{\color{accent}\rule{0.32\linewidth}{1.4pt}}\par
+\vspace{2.4cm}
+{\sffamily\Large @@AUTHOR@@\par}
+\vfill
+{\sffamily\small First Edition\par}
+{\sffamily\small @@YEAR@@\par}
+\par\endgroup
+\clearpage
+
+% ---- copyright page -----------------------------------------------------------
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{flushleft}
+\footnotesize\setstretch{1.15}
+\textbf{@@TITLE@@}\\
+@@SUBTITLE_LINE@@Copyright \copyright\ @@YEAR@@@@AUTHOR_SP@@. All rights reserved.\\[6pt]
+No part of this book may be reproduced or transmitted in any form or by any means without the written permission of the author.\\[6pt]
+First edition, @@MONTH_YEAR@@.\\[6pt]
+Typeset in @@TYPEFACE@@ with \LaTeX. Printed on @@PAPERNAME@@ paper.
+\end{flushleft}
+\clearpage
+
+\begingroup\setstretch{0.93}\tableofcontents\endgroup
+\cleardoublepage
+
+% ---- preface -----------------------------------------------------------------
+\chapter*{Preface}
+\markboth{Preface}{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+@@PREFACE@@
+
+\bigskip
+\hfill\textit{@@INITIALS@@}\\
+\hspace*{\fill}\textit{@@MONTH_YEAR@@}
+
+\cleardoublepage
+\mainmatter
+@@CHAPTER_INPUTS@@
+@@BACKMATTER@@
+\end{document}

@@ -1,0 +1,45 @@
+{
+  "material_dir": "C:/path/to/the/uploaded/material",
+  "sources": {
+    "syll": {"file": "syllabus.pdf", "role": "syllabus"},
+    "unit1": {"file": "Unit 1 slides.pptx", "role": "material", "priority": 1},
+    "unit1b": {"file": "Unit 1 slides (2).pptx", "role": "material", "duplicate_of": "unit1"},
+    "papers": {"file": "Previous papers.pdf", "role": "material"},
+    "text": {"file": "Reference textbook.pdf", "role": "reference"}
+  },
+  "identity": {
+    "terms": ["COURSE-CODE-123", "Full Course Name", "University Name", "Professor Name"],
+    "patterns": ["\\bABC\\b"],
+    "allow": []
+  },
+  "layout": {"paper": "a4paper", "font_pt": 11, "margin_pt": 72.0, "binding_pt": 18.0, "gap_limit_pct": 35,
+             "typeface": "Times", "style": "classic"},
+  "books": [
+    {
+      "id": "book1",
+      "title": "An Invented but Legitimate-Looking Title",
+      "title_lines": ["An Invented but", "Legitimate-Looking Title"],
+      "subtitle": "Subject Areas, Techniques and Applications",
+      "subtitle_lines": ["Subject Areas, Techniques", "and Applications"],
+      "author": "Fictional A. Author",
+      "year": 2026,
+      "month_year": "September 2026",
+      "page_cap": 120,
+      "index": true,
+      "preface": [
+        "First paragraph of the preface (plain LaTeX text).",
+        "Second paragraph: what each chapter covers.",
+        "Every chapter opens with its objectives and closes with a summary, key terms, questions and complete answers."
+      ],
+      "chapters": [
+        {"file": "ch01", "number": 1, "title": "Full Chapter Title", "short": "Short Header Title",
+         "budget": 34, "sources": ["unit1"], "partner": null},
+        {"file": "ch02", "number": 2, "title": "A Chapter Written By Two Authors", "short": "Two Authors",
+         "budget": 40, "sources": ["unit1"], "partner": {"file": "ch02_partA", "budget": 10}}
+      ],
+      "appendices": [
+        {"file": "appA", "title": "Examination Papers with Solutions", "budget": 30}
+      ]
+    }
+  ]
+}

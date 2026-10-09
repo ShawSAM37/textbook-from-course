@@ -1,0 +1,91 @@
+{
+  "skill_name": "textbook-from-course",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "two-chapter-mini-book-default-identity-hidden",
+      "prompt": "I've put my course syllabus (Syllabus.pdf) and the lecture files for one unit in the folder <material>: 'Communication Operations slides.pdf' (78 slides, several image-only) and 'Race conditions lecture (scanned).pdf' (15 scanned pages). Make me a short textbook PDF (max 30 pages) with two chapters, one per file, in A4. The course code is ABCD101L.",
+      "expected_output": "A clean release without the user asking for any hiding: Final/<title> - <author>.pdf, A4, at most 30 pages, chapters 1 and 2 in the classic style, each ending with a summary, key terms, review questions, practice questions and complete answers; invented title and author; no course identity anywhere (tb.py release reports RELEASE CLEAN).",
+      "files": ["<material folder with the test files>"],
+      "assertions": [
+        "the response does not ask whether to hide the course identity and states that it is hidden by default",
+        "the response asks once for previous question papers (and answer keys) because none were supplied",
+        "tb.py release reports RELEASE CLEAN and the PDF exists in Final/",
+        "the PDF has at most 30 pages, every page is A4, text is set in Times with black ink only",
+        "the PDF text and metadata contain none of ABCD101L, 'lecture', 'slides'",
+        "each chapter has review questions, practice questions and an Answers section with every question answered completely (no 'see Section' answers)",
+        "chapter openers read Chapter 1 and Chapter 2 and sit on right-hand pages",
+        "at least one figure from the slides appears with a descriptive caption and no publisher credit line"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "plan-gap-analysis-and-questions",
+      "prompt": "Here is my syllabus (Syllabus.pdf) and all my slides for units 3, 4 and 6 in <material>, plus the recommended textbook as a PDF. Before we write anything, tell me which syllabus topics are missing or thin in my slides, whether the textbook covers them, and how you'd split the material into chapters with page ceilings for about a 100-page book.",
+      "expected_output": "A confirmed gap list (searched and looked at renders) with back-fill sources, a chapter plan with page ceilings, a coverage ledger draft covering every file, and at most four questions (scope, past papers, exam format if no papers, length).",
+      "files": ["<material folder>"],
+      "assertions": [
+        "the response uses tb.py ingest/gaps (or equivalent extraction) rather than guessing",
+        "missing topics are confirmed by search or by viewing renders before being reported",
+        "every source file appears in the coverage ledger as full, partial with a reason, duplicate or omitted with a reason",
+        "the plan states the ceilings are ceilings and what size the book is expected to come out at",
+        "the response asks about previous question papers and does not ask about identity or style"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "past-papers-restated-and-solved",
+      "prompt": "Make the textbook from the notes in <material>. I also attached 5 scanned past papers (two of them are the same paper, one has a handwritten answer key attached). I need every question in the book with a full solution, and extra questions that could come in the exam.",
+      "expected_output": "Chapters from the notes, an appendix of the distinct papers restated verbatim with full self-contained solutions, per-chapter predicted practice questions with answers, no institution, course, date or registration wording, and a final message stating what was and was not audited.",
+      "files": ["<material folder with notes and scanned papers>"],
+      "assertions": [
+        "the duplicate paper is solved once and noted; the handwriting is not reproduced",
+        "a routing table exists with one row per question, checked against the page renders rather than OCR",
+        "the papers appear in an appendix titled honestly, with each question followed by a complete answer containing no section-number citations",
+        "every numerical answer was recomputed in a script and a key that disagrees with the working is not repeated",
+        "each chapter has practice questions introduced by one sentence saying they were written for the book",
+        "tb.py scrub reports 0 findings on the appendix"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "completeness-audit-everything-included",
+      "prompt": "I've gone through the booklet you made and a lot of points from my material are missing. I need each and every detail from the 9 lecture PDFs in <material>, including the image-only slides. Is everything in the book now?",
+      "expected_output": "An expansion pass that covers every slide, driven by a slide-by-slide coverage ledger, and an honest answer derived from the ledger, not from spot greps.",
+      "files": ["<material folder>", "<existing project>"],
+      "assertions": [
+        "coverage.md exists with one row per source file and per image-only slide group",
+        "image-only slides were read from their renders",
+        "authors were not told to keep chapters short or that any topic is out of scope",
+        "the final answer cites the ledger and states which slides were intentionally omitted and why",
+        "tb.py release is clean and the previous PDF is archived before the new one is released"
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "late-addition-back-matter-append",
+      "prompt": "add this formula sheet (Formulas.pdf) to the end of the finished book in <project>, no need to check everything, just give me the pdf",
+      "expected_output": "A back-matter append: one unnumbered chapter after the last chapter, build and release only, no new questions, no chapter reviews, and a note saying which Final/ PDF is current.",
+      "files": ["<existing project>", "Formulas.pdf"],
+      "assertions": [
+        "the formula sheet is registered with role material and ingested as text",
+        "one unnumbered back-matter chapter is added and appears in the contents",
+        "tb.py release is not bypassed: the page before the unnumbered chapter is not flagged as a gap",
+        "the previous edition is archived and the final message says which PDF is current"
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "excerpt-chapters-from-four-first-page-88",
+      "prompt": "Make the book from <material> but remove the contents and preface and anything not useful, number the chapters from 4, start the page numbers at 88 and make it look like an excerpt from a bigger book.",
+      "expected_output": "A book with no front matter, chapters 4..n, a first printed folio of 88 produced by shifting only the displayed page number, and a clean audit.",
+      "files": ["<material folder>"],
+      "assertions": [
+        "the page counter is not set to an even number (no setcounter{page}{88}); the displayed folio is shifted instead",
+        "chapter openers still sit on right-hand pages and margins are mirrored correctly",
+        "tb.py audit reports PROBLEMS: 0",
+        "the file is not named 'excerpt' unless the user asked, and the response says the identity is hidden by default"
+      ]
+    }
+  ]
+}

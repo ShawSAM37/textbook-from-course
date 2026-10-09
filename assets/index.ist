@@ -1,0 +1,27 @@
+% makeindex style for the default classic style: plain bold letter-group headings and
+% indented sub-entries, as in a printed textbook's index.  Copied verbatim into a project
+% as <book_id>.ist by `tb.py new-book` when that book's book.json entry sets "index": true;
+% edit the project's own copy freely, it is never overwritten once it exists.
+% Invoked automatically by `tb.py build`/`tb.py release` when <book_id>.idx
+% is non-empty: makeindex -s <book_id>.ist build/<book_id>.idx -o build/<book_id>.ind
+preamble "\\begin{theindex}\n"
+postamble "\n\n\\end{theindex}\n"
+
+headings_flag 1
+heading_prefix "{\\bfseries\\large "
+heading_suffix "}\\nopagebreak\n\\vspace{3pt}\\nopagebreak\n"
+
+item_0 "\n  \\item "
+item_1 "\n    \\subitem "
+item_2 "\n      \\subsubitem "
+item_01 "\n    \\subitem "
+item_x1 "\n    \\subitem "
+item_x2 "\n      \\subsubitem "
+
+delim_0 ", "
+delim_1 ", "
+delim_2 ", "
+delim_n ", "
+delim_r "--"
+
+line_max 100

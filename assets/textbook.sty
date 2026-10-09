@@ -1,0 +1,286 @@
+% ============================================================================
+%  textbook.sty  --  the default "classic textbook" style
+%  Times text and maths, black ink only, ruled (not tinted) boxes, small-caps running
+%  heads, a detailed contents list.  It is meant to read as an ordinary, standardised,
+%  early-2000s university textbook, not as generated or slide-derived material.
+%  The coloured, sans-serif-headed alternative is textbook-modern.sty; both define the
+%  same macros, so chapters, tb.py and the audit work with either.
+%  Engine: pdfLaTeX.   Use with:  \documentclass[11pt,a4paper,twoside,openright]{book}
+% ============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{textbook}[2026/10/09 classic book style]
+
+% ---------------------------------------------------------------- fonts ----
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{mathptmx}                 % Times text + math
+\RequirePackage[scaled=.90]{helvet}       % sans only for the odd TikZ label
+\RequirePackage[scaled=.86]{beramono}     % monospace for code
+\RequirePackage{microtype}
+\DisableLigatures[-]{encoding=*,family=tt*}   % typewriter text: '--' stays two hyphens
+
+% ---------------------------------------------------- page geometry (A4) ----
+% 1 inch margins + 0.25 inch binding offset on the inner edge, mirrored on recto/verso,
+% so a duplex printout bound on the left keeps identical margins page after page.
+\RequirePackage[a4paper,twoside,margin=1in,bindingoffset=0.25in,
+                headheight=14pt,headsep=22pt,footskip=34pt]{geometry}
+\RequirePackage{setspace}
+\setstretch{1.08}
+\setlength{\parindent}{1.4em}
+\setlength{\parskip}{0pt}
+\raggedbottom
+\widowpenalty=10000 \clubpenalty=10000 \displaywidowpenalty=10000
+\setlength{\emergencystretch}{2em}
+
+% --------------------------------------------------------------- colours ----
+% Everything prints black.  The names are kept so TikZ styles, chapters and old
+% drivers written for the coloured style still compile unchanged.
+\RequirePackage[table]{xcolor}
+\definecolor{accent}{gray}{0}
+\definecolor{exgreen}{gray}{0}
+\definecolor{examred}{gray}{0}
+\definecolor{suppgray}{gray}{0.25}
+\definecolor{keyamber}{gray}{0}
+
+% ------------------------------------------------------ maths & tables ----
+\RequirePackage{amsmath,amssymb,mathtools}
+\RequirePackage{booktabs,array,multirow,tabularx,makecell}
+\renewcommand{\arraystretch}{1.15}
+\RequirePackage{enumitem}
+\setlist{itemsep=1pt,topsep=4pt,parsep=0pt,partopsep=0pt}
+\setlist[itemize,1]{label=\textbullet}
+
+% ------------------------------------------------------ headers/footers ----
+\RequirePackage{fancyhdr}
+\newcommand{\tb@title}{}\newcommand{\tb@author}{}
+\newcommand{\booktitle}[1]{\renewcommand{\tb@title}{#1}}
+\newcommand{\bookauthor}[1]{\renewcommand{\tb@author}{#1}}
+\newcommand{\coursename}[1]{}      % obsolete: accepted and ignored so old drivers still compile
+% Verso (left) pages: "N  Chapter title"; recto (right) pages: "N.M  Section title".
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\footnotesize\scshape\leftmark}
+\fancyhead[RO]{\footnotesize\scshape\rightmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+% Chapter openers: no header, same footer position as every other page.
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\small\thepage}%
+  \renewcommand{\headrulewidth}{0pt}}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter\quad #1}{#1}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\quad #1}}
+% Intentionally blank verso pages carry no header and no number.
+\def\cleardoublepage{\clearpage\if@twoside\ifodd\c@page\else
+  \hbox{}\thispagestyle{empty}\newpage\fi\fi}
+
+% -------------------------------------------------------------- headings ----
+% Do not end a \paragraph title with a full stop: the run-in heading adds its own.
+\RequirePackage{titlesec}
+\RequirePackage{titletoc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}
+  {\filleft\fontsize{13}{15}\selectfont\scshape\chaptertitlename\ \thechapter}
+  {8pt}
+  {\raggedright\fontsize{24}{28}\selectfont}
+  [{\vspace{6pt}\titlerule[0.8pt]}]
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\bfseries}{}{0pt}
+  {\raggedright\fontsize{24}{28}\selectfont}
+  [{\vspace{6pt}\titlerule[0.8pt]}]
+\titlespacing*{\chapter}{0pt}{20pt}{28pt}
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\itshape}{\thesubsubsection}{0.8em}{}
+\titleformat{\paragraph}[runin]
+  {\normalfont\normalsize\bfseries\itshape}{}{0pt}{}[.]
+\titlespacing*{\section}{0pt}{20pt plus 4pt minus 2pt}{8pt plus 2pt}
+\titlespacing*{\subsection}{0pt}{14pt plus 3pt minus 2pt}{5pt plus 1pt}
+\titlespacing*{\subsubsection}{0pt}{12pt plus 2pt minus 1pt}{4pt plus 1pt}
+\titlespacing*{\paragraph}{0pt}{8pt plus 2pt}{0.7em}
+
+% ------------------------------------------------------ contents pages ----
+% Detailed contents: chapters bold, sections and subsections with dot leaders.
+\titlecontents{chapter}[0pt]
+  {\addvspace{9pt}\bfseries}
+  {\contentslabel{2.2em}}{}
+  {\hfill\contentspage}
+\titlecontents{section}[2.2em]
+  {\addvspace{1.5pt}\small}
+  {\contentslabel{2.4em}}{\hspace*{-2.4em}}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{subsection}[4.6em]
+  {\footnotesize}
+  {\contentslabel{3em}}{\hspace*{-3em}}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{table}[0pt]
+  {\addvspace{2pt}\small}
+  {\contentslabel{2.6em}}{\hspace*{-2.6em}}
+  {\titlerule*[0.6pc]{.}\contentspage}
+\renewcommand{\contentsname}{Contents in Detail}
+\renewcommand{\listtablename}{List of Tables}
+
+% ------------------------------------------------------------ graphics ----
+\RequirePackage{graphicx,adjustbox,float}
+\RequirePackage[section]{placeins}        % floats never drift into the next section
+\RequirePackage{caption,subcaption}
+\captionsetup{font={small},labelfont={bf},labelsep=period,
+              skip=7pt,justification=centering,singlelinecheck=true}
+\captionsetup[table]{position=above,skip=6pt}
+\captionsetup[figure]{position=below}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setlength{\intextsep}{14pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{16pt plus 2pt minus 4pt}
+\graphicspath{{figures/}}
+
+% \stdfig[size]{file}{caption}{label}
+%   size: s (45%) | m (65%, default) | l (88%) | xl (96% wide, taller: multi-panel / dense diagrams).
+%   Same caption style for every figure, a maximum height, fixed where it appears in the text ([H]).
+\newlength{\tb@figw}\newlength{\tb@figh}
+\newcommand{\stdfig}[4][m]{%
+  \begin{figure}[H]
+    \centering
+    \setlength{\tb@figh}{0.30\textheight}%
+    \IfStrEqCase{#1}{{s}{\setlength{\tb@figw}{0.45\linewidth}}%
+                     {m}{\setlength{\tb@figw}{0.65\linewidth}}%
+                     {l}{\setlength{\tb@figw}{0.88\linewidth}}%
+                     {xl}{\setlength{\tb@figw}{0.96\linewidth}\setlength{\tb@figh}{0.44\textheight}}}%
+      [\setlength{\tb@figw}{0.65\linewidth}]%
+    \includegraphics[width=\tb@figw,height=\tb@figh,keepaspectratio]{#2}%
+    \caption{#3}\label{#4}
+  \end{figure}}
+\newlength{\tb@pairw}
+% \stdfigpair[width-fraction]{file1}{file2}{caption}{label}: two figures side by side in ONE float
+\newcommand{\stdfigpair}[5][0.485]{%
+  \begin{figure}[H]\centering
+    \setlength{\tb@pairw}{\dimexpr #1\linewidth-2pt\relax}%
+    \includegraphics[width=\tb@pairw,height=0.30\textheight,keepaspectratio]{#2}\hfill
+    \includegraphics[width=\tb@pairw,height=0.30\textheight,keepaspectratio]{#3}%
+    \caption{#4}\label{#5}
+  \end{figure}}
+\RequirePackage{xstring}
+
+% ------------------------------------------------------- tikz / pgfplots ----
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes.geometric,fit,
+                decorations.pathreplacing,matrix,backgrounds}
+\RequirePackage{etoolbox}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.16}
+% align=center lets a "\\" inside a proc/box node label work (otherwise: "Not allowed in LR mode").
+\tikzset{
+  proc/.style={circle,draw=black,fill=white,minimum size=7mm,inner sep=1pt,font=\small,align=center},
+  box/.style={rectangle,draw=black,fill=white,minimum height=7mm,inner sep=4pt,font=\small,align=center},
+  msg/.style={-{Stealth[length=2.2mm]},thick,black},
+}
+
+% --------------------------------------------------------------- code ----
+% Listing line numbers are 6.5 pt (not \tiny) so that every printed label stays at or above 7 pt-equivalent legibility.
+\RequirePackage{listings}
+\lstdefinestyle{tbcode}{
+  basicstyle=\ttfamily\footnotesize,keywordstyle=\bfseries,commentstyle=\itshape,
+  numbers=left,numberstyle=\fontsize{6.5}{7}\selectfont,numbersep=7pt,
+  frame=single,framesep=5pt,xleftmargin=16pt,xrightmargin=6pt,
+  breaklines=true,columns=fullflexible,keepspaces=true,showstringspaces=false,
+  tabsize=2,aboveskip=10pt,belowskip=10pt,captionpos=b}
+\lstnewenvironment{ccode}[1][]{\lstset{style=tbcode,language=C,#1}}{}
+\lstdefinelanguage{tbbash}[]{bash}{%
+  deletecomment=[l]\#,morecomment=[l]{\# },morecomment=[l]{\#!},%   only '# text' and '#!' start a comment
+  moredelim=[l][{\bfseries}]{\#SBATCH},moredelim=[l][{\bfseries}]{\#PBS}}%  scheduler directives are code
+\lstnewenvironment{bashcode}[1][]{\lstset{style=tbcode,language=tbbash,#1}}{}
+\lstnewenvironment{plaincode}[1][]{\lstset{style=tbcode,#1}}{}
+
+% ------------------------------------------------------ algorithms ----
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\floatname{algorithm}{Algorithm}
+\numberwithin{algorithm}{chapter}
+
+% ------------------------------------------------------------- boxes ----
+% Ruled blocks: a rule above and below, no fill, no colour.  Definitions and key
+% points carry a heavy rule on top; further discussion is set smaller with hairlines.
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins,breakable,theorems}
+\tcbset{
+  tbbase/.style={enhanced,breakable,arc=0pt,boxrule=0pt,frame hidden,
+    borderline north={1.1pt}{0pt}{black},borderline south={0.5pt}{0pt}{black},
+    colback=white,coltitle=black,colbacktitle=white,
+    fonttitle=\bfseries,
+    left=2pt,right=2pt,top=5pt,bottom=5pt,
+    before skip=10pt,after skip=10pt,
+    before upper={\setstretch{1.08}\parindent=0pt\parskip=3pt},
+    toptitle=3pt,bottomtitle=0pt},
+}
+% Definition N.M:  \begin{defn}{Title}{label}      (reference it as def:label)
+\newtcbtheorem[number within=chapter]{defn}{Definition}{tbbase}{def}
+% Example N.M:     \begin{worked}{Title}{label}    (ex:label);  \begin{suppworked}{Title}{label}  (sex:label, same counter)
+\newtcbtheorem[number within=chapter]{worked}{Example}{tbbase}{ex}
+\newtcbtheorem[use counter from=worked]{suppworked}{Example}{tbbase}{sex}
+% \begin{keyresult}[Title], \begin{examfocus}[Title], \begin{supplement}[Title]
+\newtcolorbox{keyresult}[1][Key Points]{tbbase,title={#1}}
+\newtcolorbox{examfocus}[1][Points to Remember]{tbbase,title={#1}}
+\newtcolorbox{supplement}[1][Further Discussion]{tbbase,title={#1},
+  borderline north={0.5pt}{0pt}{black},
+  before upper={\small\setstretch{1.05}\parindent=0pt\parskip=3pt}}
+
+% --------------------------------------------------- chapter numbering ----
+% \tbchapter[short title]{N}{Long title} -> real numbered chapter N (N may start anywhere);
+% also sets \label{tbch:N} so a Brief Contents page can use \pageref{tbch:N}.
+\newcommand{\tbchapter}[3][]{%
+  \cleardoublepage
+  \setcounter{chapter}{\numexpr#2-1\relax}%
+  \if\relax\detokenize{#1}\relax\chapter{#3}\else\chapter[#1]{#3}\fi
+  \label{tbch:#2}}
+
+% Optional epigraph.  Only a genuine, correctly attributed quotation: never invent one.
+\newcommand{\chapepigraph}[2]{%
+  \begin{flushright}\begin{minipage}{0.78\linewidth}\raggedleft
+  \itshape``#1''\par\smallskip
+  \upshape\textemdash\ \textsc{#2}\par
+  \end{minipage}\end{flushright}\bigskip}
+
+% ------------------------------------------------ chapter furniture ----
+% \begin{objectives}\begin{itemize}...\end{itemize}\end{objectives}
+\newtcolorbox{objectives}[1][Chapter Objectives]{tbbase,title={#1},
+  before upper={\setstretch{1.05}\parindent=0pt\parskip=2pt\setlist[itemize]{itemsep=1pt,topsep=2pt}}}
+
+% End-of-chapter list of key terms:  \keyterms{term one; term two; ...}
+\newcommand{\keyterms}[1]{\par\noindent #1\par}
+
+% Questions and model answers, numbered N.k by chapter.  Environments (not macros),
+% so listings and TikZ may be used inside either.
+%   \begin{exq}{label}        question          \end{exq}     no marks printed
+%   \begin{exq}[10]{label}    question          \end{exq}     "[10 marks]" at the right margin
+%   \begin{exsol}{label}      model answer      \end{exsol}   same order and label as the question
+\newcounter{exercise}[chapter]
+\renewcommand{\theexercise}{\thechapter.\arabic{exercise}}
+\newenvironment{exq}[2][]{%
+  \par\addvspace{9pt}\refstepcounter{exercise}\label{exq:#2}%
+  \noindent{\bfseries Question~\theexercise}%
+  \if\relax\detokenize{#1}\relax\else\hfill{\small[#1\ marks]}\fi
+  \par\nobreak\vspace{2pt}\noindent\ignorespaces}{\par}
+\newenvironment{exsol}[1]{%
+  \par\addvspace{9pt}%
+  \noindent{\bfseries Answer to Question~\ref{exq:#1}}%
+  \par\nobreak\vspace{2pt}\small\setstretch{1.04}\noindent\ignorespaces}{\par\normalsize}
+
+% ---------------------------------------------------------------- index ----
+% \makeindex costs nothing for a book that never calls \index{}.  \see/\seealso already exist
+% in makeidx, so they are restyled with \renewcommand, never \newcommand.
+\RequirePackage{makeidx}
+\makeindex
+\renewcommand{\see}[2]{\emph{See }#2}
+\renewcommand{\seealso}[2]{\emph{See also }#2}
+
+% -------------------------------------------------------- front matter ----
+\RequirePackage[hidelinks,bookmarksnumbered]{hyperref}   % hidelinks: clean print
+\endinput
